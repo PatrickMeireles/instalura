@@ -3,6 +3,10 @@ import Pubsub from 'pubsub-js';
 
 export default class Header extends Component {
 
+    constructor(props){
+        super(props);
+    }
+
     pesquisa(event){
         event.preventDefault();
 
@@ -15,8 +19,8 @@ export default class Header extends Component {
 
         fetch(urlPesquisa)
         .then(response => response.json())
-        .then(fotos => {            
-            Pubsub.publish('timeline', { fotos });
+        .then(fotos => {             
+            this.props.store.subscribe(fotos);
         });
     }
 

@@ -4,6 +4,9 @@ import Timeline from './componentes/Timeline.js';
 import './css/reset.css';
 import './css/timeline.css';
 import './css/login.css';
+import TimeLineStore from './logicas/TimelineStore';
+
+const timeLineStore = new TimeLineStore([]);
 
 function App(match) {
 
@@ -14,8 +17,8 @@ function App(match) {
   return (
     <div id="root">
       <div className="main">
-        <Header />
-        <Timeline login={possuiLogin} />
+        <Header store={ timeLineStore } />
+        <Timeline login={possuiLogin} store={ timeLineStore }/>
       </div>
     </div>
   );

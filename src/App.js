@@ -4,9 +4,11 @@ import Timeline from './componentes/Timeline.js';
 import './css/reset.css';
 import './css/timeline.css';
 import './css/login.css';
-import TimeLineStore from './logicas/TimelineStore';
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import { timeline } from './reducers/timeline';
 
-const timeLineStore = new TimeLineStore([]);
+const store = createStore(timeline, applyMiddleware(thunkMiddleware));
 
 function App(match) {
 
@@ -17,11 +19,10 @@ function App(match) {
   return (
     <div id="root">
       <div className="main">
-        <Header store={ timeLineStore } />
-        <Timeline login={possuiLogin} store={ timeLineStore }/>
+        <Header store={ store } />
+        <Timeline login={possuiLogin} store={store}/>
       </div>
     </div>
   );
 }
-
 export default App;

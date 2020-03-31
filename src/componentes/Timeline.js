@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import FotoItem from './Foto';
 import { CSSTransitionGroup as ReactCSSTransitionGroup } from 'react-transition-group';
+import TimelineApi from '../logicas/TimelineApi';
 
 export default class Timeline extends Component {
 
@@ -12,20 +13,19 @@ export default class Timeline extends Component {
     }
 
     componentWillMount() {
-        this.props.store.subscribe(fotos => {
-            this.setState({ fotos: fotos });
+        this.props.store.subscribe(() => {
+            this.setState({ fotos: this.props.store.getState() });
         });        
     }
 
     carregaFotos() {
         let urlPerfil;
-        if (this.login === undefined) {
+        if (this.login === undefined)
             urlPerfil = `https://instalura-api.herokuapp.com/api/fotos?X-AUTH-TOKEN=${localStorage.getItem('auth-token')}`;
-        }
-        else {
+        else
             urlPerfil = `https://instalura-api.herokuapp.com/api/public/fotos/${this.login}`;
-        }        
-        this.props.store.lista(urlPerfil);
+
+        this.props.store.dispatch(TimelineApi.lista(urlPerfil));        
     }
 
     componentDidMount() {
@@ -40,11 +40,11 @@ export default class Timeline extends Component {
     }
 
     like(fotoId) {
-        this.props.store.like(fotoId);
+        this.props.store.dispatch(TimelineApi.like(fotoId));        
     }
 
     comenta(fotoId, comentario) {
-        this.props.store.comenta(fotoId, comentario);
+        this.props.store.dispatch(TimelineApi.comenta(fotoId, comentario));
     }
 
     render() {

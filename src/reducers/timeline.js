@@ -1,26 +1,45 @@
+import { List } from 'immutable';
+
+function trocaFoto(lista, fotoId, callbackAtualizaPropriedades) {
+  const fotoEstadoAntigo = lista.find(com => com.id == fotoId);
+
+  const novasPropriedades = callbackAtualizaPropriedades(fotoEstadoAntigo);
+
+  const fotoEstadoNovo = Object.assign({}, fotoEstadoAntigo, novasPropriedades);
+  var indiceDaLista = lista.findIndex(foto => foto.id === fotoId);
+  return lista.set(indiceDaLista, fotoEstadoNovo);
+}
+
 //REDUCER
-export function timeline(state = [], action) {
+export function timeline(state = new List(), action) {
   if (action.type === 'LISTAGEM')
-    return action.fotos;
+    return new List(action.fotos);
 
   if (action.type === 'COMENTARIO') {
-    const fotoFind = state.find(com => com.id == action.fotoId);
-    fotoFind.comentarios.push(action.novoComentario);
-    return state;
+
+    return trocaFoto(state, action.fotoId, (fotoEstadoAntigo => {
+      const novosComentarios = fotoEstadoAntigo.comentarios.concat(action.novoComentario);
+      return { comentarios: novosComentarios };
+    }));
   }
 
   if (action.type === 'LIKE') {
-    const fotoFind = state.find(foto => foto.id == action.fotoId);
-    fotoFind.likeada = !fotoFind.likeada;
-    const possivelLiker = fotoFind.likers.find(likerAtual => likerAtual.login == action.liker.login);
-    if (possivelLiker === undefined) {
-      fotoFind.likers.push(action.liker);
-    }
-    else {
-      const novosLikers = fotoFind.likers.filter(likerAtual => likerAtual.login !== action.liker.login);
-      fotoFind.likers = novosLikers;
-    }
-    return state;
+
+    return trocaFoto(state, action.fotoId, (fotoEstadoAntigo => {
+
+      const likeada = !fotoEstadoAntigo.likeada;
+      const liker = action.liker;
+      const possivelLiker = fotoEstadoAntigo.likers.find(likerAtual => likerAtual.login == liker.login);
+
+      let novosLikers;
+
+      if (possivelLiker === undefined)
+        novosLikers = fotoEstadoAntigo.likers.concat(liker);
+      else
+        novosLikers = fotoEstadoAntigo.likers.filter(likerAtual => likerAtual.login !== liker.login);
+
+      return { likeada, likers: novosLikers };
+    }));
   }
 
   return state;

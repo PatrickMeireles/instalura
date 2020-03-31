@@ -1,30 +1,37 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Header from './componentes/Header.js';
 import Timeline from './componentes/Timeline.js';
 import './css/reset.css';
 import './css/timeline.css';
 import './css/login.css';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
-import thunkMiddleware from 'redux-thunk';
-import { timeline } from './reducers/timeline';
-import {notificacao} from './reducers/header';
-          
-const reducers = combineReducers({timeline, notificacao});
-const store = createStore(reducers, applyMiddleware(thunkMiddleware));
+import PropTypes from 'prop-types';
+import {ReactReduxContext} from "react-redux";
 
-function App(match) {
-
-  let possuiLogin;
-  if(match?.match?.params)
-    possuiLogin = match.match.params["login"];  
-
-  return (
-    <div id="root">
-      <div className="main">
-        <Header store={ store } />
-        <Timeline login={possuiLogin} store={store}/>
-      </div>
-    </div>
-  );
+class App extends Component {
+  render() {
+      const { login } = this.props.match.params;
+      return (
+          <ReactReduxContext.Consumer>
+              {( {store} ) =>
+                  {
+                      return (
+                          <div id="root">
+                              <div className="main">
+                                  <Header store={store}/>
+                                  <Timeline login={ login }/>
+                              </div>
+                          </div>
+                      )
+                  }
+              }
+          </ReactReduxContext.Consumer>
+      );
+  }
 }
+
+App.contextTypes = {
+  store : PropTypes.object.isRequired
+}
+
+
 export default App;

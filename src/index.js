@@ -6,6 +6,14 @@ import Logout from './componentes/Logout.js';
 import { BrowserRouter as Router, Route, Switch, Redirect, matchPath } from 'react-router-dom';
 import { createBrowserHistory} from 'history';
 import * as serviceWorker from './serviceWorker';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import { timeline } from './reducers/timeline';
+import {notificacao} from './reducers/header';
+import { Provider } from 'react-redux';
+
+const reducers = combineReducers({timeline, notificacao});
+const store = createStore(reducers, applyMiddleware(thunkMiddleware));
 
 function verificaAutenticacao(nextState, replace) { 
   const match = matchPath('/timeline', {
@@ -27,15 +35,17 @@ function verificaAutenticacao(nextState, replace) {
   return <App match={nextState.match}/>
 }
 
-ReactDOM.render(
- 
-  (<Router history={createBrowserHistory}>
-    <Switch>
-        <Route exact path="/" component={Login}/>
-        <Route path="/timeline/:login?" render={verificaAutenticacao}/>
-        <Route exact path="/logout" component={Logout}/> 
-    </Switch>
-</Router>), 
+ReactDOM.render( 
+  (
+    <Provider store={ store }>
+      <Router history={createBrowserHistory}>
+        <Switch>
+          <Route exact path="/" component={Login} />
+          <Route path="/timeline/:login?" render={verificaAutenticacao} />
+          <Route exact path="/logout" component={Logout} />
+        </Switch>
+      </Router>
+    </Provider>), 
 
   document.getElementById('root')
 );
